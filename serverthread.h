@@ -15,10 +15,11 @@
 #include "info.h"
 #include "channels.h"
 #include "events.h"
-#include "recordings.h"
+#include "deletedrecordings.h"
 #include "remote.h"
 #include "timers.h"
 #include "changestate.h"
+#include "eventsstreamthread.h"
 #include "osd.h"
 #include "searchtimers.h"
 #include "epgsearch.h"
@@ -36,6 +37,7 @@ private:
     unsigned short int listenPort;
     cxxtools::EventLoop loop;
     cxxtools::http::Server *server;
+    EventsStreamThread eventsStreamThread;
     void Action(void);
     WebappService webappService;
     RestfulServices* services;
