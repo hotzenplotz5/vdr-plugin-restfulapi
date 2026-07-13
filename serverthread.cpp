@@ -40,6 +40,7 @@ void cServerThread::Action(void)
   ChannelsService channelsService;
   EventsService eventsService;
   RecordingsService recordingsService;
+  DeletedRecordingsService deletedRecordingsService;
   RemoteService remoteService;
   TimersService timersService;
   ChangeStateService changeStateService;
@@ -57,6 +58,7 @@ void cServerThread::Action(void)
   RestfulService* eventsImage = new RestfulService("/events/image", true, 1, events);
   RestfulService* eventsSearch = new RestfulService("/events/search", false, 1, events);
   RestfulService* recordings = new RestfulService("/recordings", true, 1);
+  RestfulService* deletedRecordings = new RestfulService("/recordings/deleted", true, 1, recordings);
   RestfulService* recordingsCut = new RestfulService("/recordings/cut", true, 1, recordings);
   RestfulService* recordingsMarks = new RestfulService("/recordings/marks", true, 1, recordings);
   RestfulService* remote = new RestfulService("/remote", true, 1);
@@ -77,6 +79,7 @@ void cServerThread::Action(void)
   services->appendService(eventsImage);
   services->appendService(eventsSearch);
   services->appendService(recordings);
+  services->appendService(deletedRecordings);
   services->appendService(recordingsCut);
   services->appendService(recordingsMarks);
   services->appendService(remote);
@@ -92,6 +95,7 @@ void cServerThread::Action(void)
   server->addService(std::move(*info->Regex()), infoService);
   server->addService(std::move(*channels->Regex()), channelsService);
   server->addService(std::move(*events->Regex()), eventsService);
+  server->addService(std::move(*deletedRecordings->Regex()), deletedRecordingsService);
   server->addService(std::move(*recordings->Regex()), recordingsService);
   server->addService(std::move(*remote->Regex()), remoteService);
   server->addService(std::move(*timers->Regex()), timersService);
