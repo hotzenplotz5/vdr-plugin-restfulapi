@@ -15,7 +15,7 @@
 #include "info.h"
 #include "channels.h"
 #include "events.h"
-#include "recordings.h"
+#include "deletedrecordings.h"
 #include "remote.h"
 #include "timers.h"
 #include "changestate.h"
