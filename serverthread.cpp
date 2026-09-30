@@ -41,6 +41,12 @@ void cServerThread::Action(void)
   EventsService eventsService;
   RecordingsService recordingsService;
   DeletedRecordingsService deletedRecordingsService;
+  RecordingMovePreviewService recordingMovePreviewService;
+  RecordingMoveValidateService recordingMoveValidateService;
+  RecordingMoveService recordingMoveService;
+  RecordingTrashPreviewService recordingTrashPreviewService;
+  RecordingTrashValidateService recordingTrashValidateService;
+  RecordingTrashService recordingTrashService;
   RemoteService remoteService;
   TimersService timersService;
   ChangeStateService changeStateService;
@@ -61,6 +67,12 @@ void cServerThread::Action(void)
   RestfulService* deletedRecordings = new RestfulService("/recordings/deleted", true, 1, recordings);
   RestfulService* recordingsCut = new RestfulService("/recordings/cut", true, 1, recordings);
   RestfulService* recordingsMarks = new RestfulService("/recordings/marks", true, 1, recordings);
+  RestfulService* recordingMovePreview = new RestfulService("/recordings/move/preview", true, 1, recordings);
+  RestfulService* recordingMoveValidate = new RestfulService("/recordings/move/validate", true, 1, recordings);
+  RestfulService* recordingMove = new RestfulService("/recordings/move", true, 1, recordings);
+  RestfulService* recordingTrashPreview = new RestfulService("/recordings/trash/preview", true, 1, recordings);
+  RestfulService* recordingTrashValidate = new RestfulService("/recordings/trash/validate", true, 1, recordings);
+  RestfulService* recordingTrash = new RestfulService("/recordings/trash", true, 1, recordings);
   RestfulService* remote = new RestfulService("/remote", true, 1);
   RestfulService* timers = new RestfulService("/timers", true, 1);
   RestfulService* changeState = new RestfulService("/change-state", true, 1);
@@ -82,6 +94,12 @@ void cServerThread::Action(void)
   services->appendService(deletedRecordings);
   services->appendService(recordingsCut);
   services->appendService(recordingsMarks);
+  services->appendService(recordingMovePreview);
+  services->appendService(recordingMoveValidate);
+  services->appendService(recordingMove);
+  services->appendService(recordingTrashPreview);
+  services->appendService(recordingTrashValidate);
+  services->appendService(recordingTrash);
   services->appendService(remote);
   services->appendService(timers);
   services->appendService(changeState);
@@ -95,6 +113,12 @@ void cServerThread::Action(void)
   server->addService(std::move(*info->Regex()), infoService);
   server->addService(std::move(*channels->Regex()), channelsService);
   server->addService(std::move(*events->Regex()), eventsService);
+  server->addService(std::move(*recordingMovePreview->Regex()), recordingMovePreviewService);
+  server->addService(std::move(*recordingMoveValidate->Regex()), recordingMoveValidateService);
+  server->addService(std::move(*recordingMove->Regex()), recordingMoveService);
+  server->addService(std::move(*recordingTrashPreview->Regex()), recordingTrashPreviewService);
+  server->addService(std::move(*recordingTrashValidate->Regex()), recordingTrashValidateService);
+  server->addService(std::move(*recordingTrash->Regex()), recordingTrashService);
   server->addService(std::move(*deletedRecordings->Regex()), deletedRecordingsService);
   server->addService(std::move(*recordings->Regex()), recordingsService);
   server->addService(std::move(*remote->Regex()), remoteService);
@@ -139,7 +163,6 @@ void cServerThread::addWebappService(string name) {
       }
       i++;
   }
-
   if (false == occupied) {
       RestfulService* service = new RestfulService(path, true, 1);
       services->appendService(service);
