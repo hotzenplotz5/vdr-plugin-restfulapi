@@ -40,6 +40,7 @@ void cServerThread::Action(void)
   ChannelsService channelsService;
   EventsService eventsService;
   RecordingsService recordingsService;
+  DeletedRecordingsService deletedRecordingsService;
   RecordingMovePreviewService recordingMovePreviewService;
   RecordingRenamePreviewService recordingRenamePreviewService;
   RecordingMoveValidateService recordingMoveValidateService;
@@ -66,6 +67,7 @@ void cServerThread::Action(void)
   RestfulService* eventsImage = new RestfulService("/events/image", true, 1, events);
   RestfulService* eventsSearch = new RestfulService("/events/search", false, 1, events);
   RestfulService* recordings = new RestfulService("/recordings", true, 1);
+  RestfulService* deletedRecordings = new RestfulService("/recordings/deleted", true, 1, recordings);
   RestfulService* recordingsCut = new RestfulService("/recordings/cut", true, 1, recordings);
   RestfulService* recordingsMarks = new RestfulService("/recordings/marks", true, 1, recordings);
   RestfulService* recordingMovePreview = new RestfulService("/recordings/move/preview", true, 1, recordings);
@@ -95,6 +97,7 @@ void cServerThread::Action(void)
   services->appendService(eventsImage);
   services->appendService(eventsSearch);
   services->appendService(recordings);
+  services->appendService(deletedRecordings);
   services->appendService(recordingsCut);
   services->appendService(recordingsMarks);
   services->appendService(recordingMovePreview);
@@ -128,6 +131,7 @@ void cServerThread::Action(void)
   server->addService(std::move(*recordingTrashPreview->Regex()), recordingTrashPreviewService);
   server->addService(std::move(*recordingTrashValidate->Regex()), recordingTrashValidateService);
   server->addService(std::move(*recordingTrash->Regex()), recordingTrashService);
+  server->addService(std::move(*deletedRecordings->Regex()), deletedRecordingsService);
   server->addService(std::move(*recordings->Regex()), recordingsService);
   server->addService(std::move(*remote->Regex()), remoteService);
   server->addService(std::move(*timers->Regex()), timersService);

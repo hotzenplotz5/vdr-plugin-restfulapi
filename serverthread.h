@@ -16,6 +16,7 @@
 #include "channels.h"
 #include "events.h"
 #include "recordings.h"
+#include "deletedrecordings.h"
 #include "recordingpreview.h"
 #include "recordingmovepreview.h"
 #include "recordingrenamepreview.h"
