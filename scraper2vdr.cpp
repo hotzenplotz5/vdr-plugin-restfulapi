@@ -1,12 +1,35 @@
 #include "scraper2vdr.h"
+#include "scraperimagepaths.h"
+
 using namespace std;
+
+namespace {
+// For modern TVScraper/scraper2vdr use the provider's advertised image cache.
+// On older plugins retain the explicitly configured legacy EPG image location.
+cPlugin* lookupScraperPlugin() {
+  cPlugin* provider = cPluginManager::GetPlugin("scraper2vdr");
+  if (!provider)
+    provider = cPluginManager::GetPlugin("tvscraper");
+  return provider;
+}
+
+string scraperImageRoot(cPlugin* provider) {
+  if (provider) {
+    cEnvironment environment;
+    if (provider->Service("GetEnvironment", &environment) &&
+        !environment.basePath.empty())
+      return environment.basePath;
+  }
+  return Settings::get()->EpgImageDirectory();
+}
+} // namespace
 
 /**
  * initialize scraper service
  */
 Scraper2VdrService::Scraper2VdrService() {
   scraper = getScraperPlugin();
-  epgImagesDir = Settings::get()->EpgImageDirectory();
+  epgImagesDir = scraperImageRoot(scraper);
 };
 
 /**
@@ -22,11 +45,7 @@ Scraper2VdrService::~Scraper2VdrService() {
  */
 cPlugin *Scraper2VdrService::getScraperPlugin () {
 
-  cPlugin *pScraper = cPluginManager::GetPlugin("scraper2vdr");
-  if ( !pScraper )
-    pScraper = cPluginManager::GetPlugin("tvscraper");
-
-  return pScraper;
+  return lookupScraperPlugin();
 };
 
 /**
@@ -183,9 +202,7 @@ string Scraper2VdrService::getMedia(const cRecording* recording) {
  */
 string Scraper2VdrService::cleanImagePath(string path) {
 
-  path = StringExtension::replace(path, epgImagesDir, "");
-  path.erase(0, path.find_first_not_of("/"));
-  return path;
+  return ScraperImagePaths::relative(path, epgImagesDir);
 };
 
 /**
