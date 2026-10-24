@@ -61,6 +61,26 @@ tests do **not** establish full-plugin compilation or target acceptance.
    installation from this JSON timeout until logs/core evidence establishes
    a causal link.
 
+## Preserve the existing VDR-Suite default
+
+The working yaVDR/VDR-Suite deployment remains the compatibility baseline.
+This RESTfulAPI change **does not change** VDR-Suite's
+`VDR_SUITE_RECORDING_ARTWORK_ROOTS`, backend image-serving policy,
+authentication, UI endpoints, or local storage mapping. On that installation
+the Suite's explicitly configured, allowlisted artwork root remains authoritative.
+
+`GetEnvironment` is an internal RESTfulAPI scraper-service lookup to
+normalize the scraper's own image metadata and serve its private HTTP
+`/scraper/image/` endpoint. It is **not** a request to reconfigure the
+Suite automatically or to replace a proven local filesystem mapping.
+
+For alternative distributions, verify whether the Suite and VDR share a
+filesystem. Explicit per-backend paths are appropriate for a co-located
+deployment; remote backends need an authenticated image transport/proxy
+rather than blind mounting or trusting arbitrary provider-supplied filesystem
+paths. Preserve the current default until a specific cross-distribution
+failure is demonstrated and separately regression-tested.
+
 ## MLD packaging note
 
 MLD currently pins upstream `yavdr/vdr-plugin-restfulapi` at
