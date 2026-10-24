@@ -99,7 +99,8 @@ inline std::string writableCacheFile(const std::string& root,
   if (ec || !fs::is_directory(base, ec) || ec)
     return "";
   const fs::path parent = fs::weakly_canonical(base / fs::path(image).parent_path(), ec);
-  if (ec || !validRelative(parent.lexically_relative(base)))
+  if (ec || (parent != base &&
+             !validRelative(parent.lexically_relative(base))))
     return "";
   // Do not write through an existing symlink at the target path.
   const fs::path target = parent / fs::path(image).filename();
