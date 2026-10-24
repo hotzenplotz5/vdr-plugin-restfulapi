@@ -599,7 +599,8 @@ void ScraperImageResponder::reply(ostream& out, cxxtools::http::Request& request
 
 #ifdef USE_LIBMAGICKPLUSPLUS
   if (image != imageFile) {
-    if ((width <= 0 && height <= 0) || width > 4096 || height > 4096) {
+    if ((width == 0 && height == 0) || width < 0 || height < 0 ||
+        width > 4096 || height > 4096) {
       reply.httpReturn(400, "Invalid image dimensions");
       return;
     }
