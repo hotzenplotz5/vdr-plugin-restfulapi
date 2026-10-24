@@ -1,0 +1,34 @@
+name: RESTfulAPI Suite integration build
+
+on:
+  push:
+    branches:
+      - fix/scraper-environment-image-paths
+  pull_request:
+    branches:
+      - vdr-suite-integration
+
+permissions:
+  contents: read
+
+jobs:
+  suite-integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        imagemagick: ["0", "1"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install VDR and cxxtools development dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            vdr-dev libcxxtools-dev libmagick++-dev gettext pkg-config
+      - name: Test scraper artwork paths and confinement
+        run: make test-scraper-image-paths
+      - name: Compile complete Suite integration plugin
+        run: make -j2 USE_LIBMAGICKPLUSPLUS=${{ matrix.imagemagick }} libvdr-restfulapi.so
+      - name: Verify generated plugin
+        run: test -s libvdr-restfulapi.so && file libvdr-restfulapi.so
