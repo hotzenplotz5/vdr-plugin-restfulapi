@@ -452,6 +452,11 @@ FileCaches* FileCaches::get()
 void FileCaches::cacheEventImages()
 {
   string imageFolder = Settings::get()->EpgImageDirectory();
+  // Empty optional EPG directory must not turn into a scan of filesystem '/'.
+  if (imageFolder.empty()) {
+    eventImages.clear();
+    return;
+  }
   string folderWildcard = imageFolder + (string)"/*";
   VdrExtension::scanForFiles(folderWildcard, eventImages);
 }
