@@ -651,6 +651,10 @@ void ScraperImageResponder::reply(ostream& out, cxxtools::http::Request& request
     contentType = "image/webp";
   else if (type == ".gif" || type == ".GIF")
     contentType = "image/gif";
+  else if (type == ".avif" || type == ".AVIF")
+    contentType = "image/avif";
+  else if (type == ".bmp" || type == ".BMP")
+    contentType = "image/bmp";
   else {
     reply.httpReturn(415, "Unsupported image type");
     return;
