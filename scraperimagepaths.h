@@ -15,7 +15,7 @@ inline bool validRelative(const fs::path& path) {
     return false;
   const std::string raw = path.generic_string();
   // The responder consumes URL paths: reject ambiguous encodings and separators.
-  if (raw.find_first_of("\\%?#") != std::string::npos)
+  if (raw.find_first_of("\\?#") != std::string::npos)
     return false;
   for (unsigned char c : raw)
     if (c < 0x20 || c == 0x7f)
@@ -25,6 +25,34 @@ inline bool validRelative(const fs::path& path) {
       return false;
   }
   return true;
+}
+
+inline bool decodeUrlPath(const std::string& encoded, std::string& output) {
+  output.clear();
+  for (size_t i = 0; i < encoded.size(); ++i) {
+    unsigned char c = static_cast<unsigned char>(encoded[i]);
+    if (c == '%') {
+      if (i + 2 >= encoded.size())
+        return false;
+      auto hex = [](unsigned char d) -> int {
+        if (d >= '0' && d <= '9') return d - '0';
+        if (d >= 'a' && d <= 'f') return d - 'a' + 10;
+        if (d >= 'A' && d <= 'F') return d - 'A' + 10;
+        return -1;
+      };
+      const int hi = hex(encoded[i + 1]);
+      const int lo = hex(encoded[i + 2]);
+      if (hi < 0 || lo < 0)
+        return false;
+      c = static_cast<unsigned char>((hi << 4) | lo);
+      i += 2;
+      // Encoded path separators or controls must not change the URL routing.
+      if (c == '/' || c == '\\' || c < 0x20 || c == 0x7f)
+        return false;
+    }
+    output.push_back(static_cast<char>(c));
+  }
+  return validRelative(fs::path(output));
 }
 
 inline std::string relative(const std::string& image, const std::string& root) {
