@@ -16,8 +16,12 @@ int main() {
   const fs::path media = root / "series";
   fs::create_directories(media);
   std::ofstream(media / "poster 1.jpg") << "test";
-  std::ofstream(root / "outside.png") << "test";
-  const fs::path external = root.parent_path();
+  // Test a real symlink escape to another existing regular file.
+  char outsideTemplate[] = "/tmp/restfulapi-external-image-XXXXXX";
+  const char* outsideDir = mkdtemp(outsideTemplate);
+  assert(outsideDir != nullptr);
+  const fs::path external(outsideDir);
+  std::ofstream(external / "not-owned.png") << "external";
   fs::create_symlink(external / "not-owned.png", media / "escape.png");
 
   const std::string image = (media / "poster 1.jpg").string();
@@ -56,5 +60,6 @@ int main() {
   assert(writableCacheFile(rootStr, "symlink.png").empty());
 
   fs::remove_all(root);
+  fs::remove_all(external);
   std::cout << "PASS scraper image paths, empty roots, escaping and confinement\n";
 }
